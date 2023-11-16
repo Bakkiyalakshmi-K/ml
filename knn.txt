@@ -1,0 +1,112 @@
+K-NEAREST ALGORITHM
+
+import pandas as pd
+import numpy as np
+
+# Define the dataset
+data = {
+    'Outlook': ['Rainy', 'Rainy', 'Overcast', 'Sunny', 'Sunny', 'Sunny', 'Overcast', 'Rainy', 'Rainy', 'Sunny', 'Rainy', 'Overcast', 'Overcast', 'Sunny'],
+    'Temperature': ['Hot', 'Hot', 'Hot', 'Mild', 'Cool', 'Cool', 'Cool', 'Mild', 'Cool', 'Mild', 'Mild', 'Mild', 'Hot', 'Mild'],
+    'Humidity': ['High', 'High', 'High', 'High', 'Normal', 'Normal', 'Normal', 'High', 'Normal', 'Normal', 'Normal', 'High', 'Normal', 'High'],
+    'Windy': [False, True, False, False, False, True, True, False, False, False, True, True, False, True],
+    'Play Golf': ['No', 'No', 'Yes', 'Yes', 'Yes', 'No', 'Yes', 'No', 'Yes', 'Yes', 'Yes', 'Yes', 'Yes', 'No']
+}
+
+df = pd.DataFrame(data)
+
+def build_decision_tree(data):
+    unique_labels = data['Play Golf'].unique()
+
+    if len(unique_labels) == 1:
+        return unique_labels[0]
+
+    num_features = len(data.columns) - 1
+    best_feature = None
+    best_gain = -1
+
+    for feature in data.columns[:-1]:
+        unique_values = data[feature].unique()
+        current_entropy = calculate_entropy(data)
+        new_entropy = 0
+
+        for value in unique_values:
+            sub_data = data[data[feature] == value]
+            sub_entropy = calculate_entropy(sub_data)
+            weight = len(sub_data) / len(data)
+            new_entropy += weight * sub_entropy
+
+        information_gain = current_entropy - new_entropy
+
+        if information_gain > best_gain:
+            best_gain = information_gain
+            best_feature = feature
+
+    if best_gain == 0:
+        return data['Play Golf'].mode()[0]
+
+    node = {}
+    node[best_feature] = {}
+
+    unique_values = data[best_feature].unique()
+
+    for value in unique_values:
+        sub_data = data[data[best_feature] == value]
+        node[best_feature][value] = build_decision_tree(sub_data)
+
+    return node
+
+def calculate_entropy(data):
+    labels, counts = np.unique(data['Play Golf'], return_counts=True)
+    probabilities = counts / len(data)
+    entropy = -np.sum(probabilities * np.log2(probabilities))
+    return entropy
+
+def predict(tree, sample):
+    feature = next(iter(tree))
+    value = sample[feature]
+    prediction = tree[feature][value]
+
+    if isinstance(prediction, dict):
+        return predict(prediction, sample)
+    else:
+        return prediction
+
+# Example usage:
+tree = build_decision_tree(df)
+
+sample = {'Outlook': 'Rainy', 'Temperature': 'Mild', 'Humidity': 'High', 'Windy': False}
+prediction = predict(tree, sample)
+print(f"The predicted outcome is: {prediction}")
+
+OUTPUT:
+   The predicted outcome is: No
+
+
+
+2.
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier
+
+# Step 1: Load the dataset
+data = pd.read_csv('data4_19.csv')
+
+# Step 2: Preprocess the data
+X = data.iloc[:, :-1]  # Features (sepal length, sepal width, petal length, petal width)
+y = data.iloc[:, -1]   # Target variable (species)
+
+# Step 3: Build the Decision Tree
+clf = DecisionTreeClassifier(random_state=42)
+clf.fit(X, y)
+
+# Step 4: Make a prediction
+new_flower_measurements = [[5.2, 3.1, 1.4, 0.2]]
+predicted_species = clf.predict(new_flower_measurements)
+
+# Print the predicted species
+print(f"The predicted species of the new flower is: {predicted_species[0]}")
+
+OUTPUT:
+The predicted species of the new flower is: Iris-setosa
+ [ ]:
+
+

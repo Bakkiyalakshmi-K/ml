@@ -1,0 +1,79 @@
+K-MEANS CLUSTERING ALGORITHM1.
+
+1.
+
+import numpy as np
+
+def calculate_distance(point1, point2):
+    return np.linalg.norm(np.array(point1) – np.array(point2))
+
+def assign_to_centroid(data, centroids):
+    assignments = {}
+    for point in data:
+        min_distance = float('inf')
+        closest_centroid = None
+        for centroid_name, centroid_location in centroids.items():
+            distance = calculate_distance(point, centroid_location)
+            if distance < min_distance:
+                min_distance = distance
+                closest_centroid = centroid_name
+        if closest_centroid in assignments:
+            assignments[closest_centroid].append(point)
+        else:
+            assignments[closest_centroid] = [point]
+    return assignments
+
+def assign_to_centroid(data, centroids):
+    assignments = {}
+    for point in data:
+        min_distance = float('inf')
+        closest_centroid = None
+        for centroid_name, centroid_location in centroids.items():
+            distance = calculate_distance(point, centroid_location)
+            if distance < min_distance:
+                min_distance = distance
+                closest_centroid = centroid_name
+        if closest_centroid in assignments:
+            assignments[closest_centroid].append(point)
+        else:
+            assignments[closest_centroid] = [point]
+    return assignments
+
+def k_means(data, centroids, num_iterations):
+    for _ in range(num_iterations):
+        assignments = assign_to_centroid(data, centroids)
+        centroids = update_centroids(assignments)
+    return assignments, centroids
+
+# Given data and centroids
+data = [[0.34, -0.2, 1.13, 4.3], [5.1, -12.6, -7.0, 1.9], [-15.7, 0.06, -7.1, 11.2]]
+centroids = {"centroid1": [1.1, 0.2, -3.1, -0.4], "centroid2": [9.3, 6.1, -4.7, 0.
+
+# Perform K-means clustering for 2 iterations
+num_iterations = 2
+final_assignments, final_centroids = k_means(data, centroids, num_iterations)
+
+
+# Print the final assignments and centroids
+print("Final Assignments:")
+for centroid_name, assigned_points in final_assignments.items():
+    print(f"{centroid_name}: {assigned_points}")
+
+OUTPUT:
+
+
+Final Assignments:
+centroid1: [[0.34, -0.2, 1.13, 4.3], [5.1, -12.6, -7.0, 1.9], [-15.7, 0.06, -7.1, 11.2]]
+
+
+2.
+
+print("\nFinal Centroids:")
+for centroid_name, centroid_location in final_centroids.items():
+    print(f"{centroid_name}: {centroid_location}")
+
+OUTPUT:
+
+Final Centroids:
+centroid1: [-3.42, -4.246666666666666, -4.323333333333333, 5.8]
+

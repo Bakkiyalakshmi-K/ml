@@ -1,0 +1,141 @@
+Decision Tree Algorithm
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.ensemble import RandomForestClassifier, BaggingClassifier, AdaBoostClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix
+import matplotlib.pyplot as plt
+
+# Load the dataset
+data = pd.read_csv('Loan_Train.csv')
+
+# Drop rows with missing values in any column
+data.dropna(inplace=True)
+
+# Selecting features and label
+X = data[['Gender', 'Married', 'Education', 'ApplicantIncome', 'CoapplicantIncome', 'LoanAmount', 'Loan_Amount_Term', 'Credit_History', 'Property_Area']]
+y = data['Loan_Status']
+
+# Label Encoding for categorical variables
+label_encoder = LabelEncoder()
+for col in ['Gender', 'Married', 'Education', 'Property_Area']:
+    X[col] = label_encoder.fit_transform(X[col])
+
+# Feature Scaling
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Splitting the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+
+# Decision Tree
+decision_tree = DecisionTreeClassifier()
+decision_tree.fit(X_train, y_train)
+
+# Save Decision Tree as an image
+plt.figure(figsize=(20,10))
+plot_tree(decision_tree, filled=True, feature_names=X.columns, class_names=['N', 'Y'])
+plt.savefig('decision_tree.png')
+
+# Random Forest
+random_forest = RandomForestClassifier()
+random_forest.fit(X_train, y_train)
+
+# Predictions for Decision Tree and Random Forest
+dt_predictions = decision_tree.predict(X_test)
+rf_predictions = random_forest.predict(X_test)
+
+# Accuracy and Confusion matrix for Decision Tree
+dt_accuracy = accuracy_score(y_test, dt_predictions)
+dt_conf_matrix = confusion_matrix(y_test, dt_predictions)
+
+# Accuracy and Confusion matrix for Random Forest
+rf_accuracy = accuracy_score(y_test, rf_predictions)
+rf_conf_matrix = confusion_matrix(y_test, rf_predictions)
+
+# Bagging
+bagging = BaggingClassifier(base_estimator=DecisionTreeClassifier(), n_estimators=50, random_state=42)
+bagging.fit(X_train, y_train)
+
+# AdaBoost
+adaboost = AdaBoostClassifier(base_estimator=DecisionTreeClassifier(), n_estimators=50, random_state=42)
+adaboost.fit(X_train, y_train)
+
+# Predictions for Bagging and AdaBoost
+bagging_predictions = bagging.predict(X_test)
+adaboost_predictions = adaboost.predict(X_test)
+
+# Accuracy for Bagging and AdaBoost
+bagging_accuracy = accuracy_score(y_test, bagging_predictions)
+adaboost_accuracy = accuracy_score(y_test, adaboost_predictions)
+
+# Confusion matrix for Bagging and AdaBoost
+bagging_conf_matrix = confusion_matrix(y_test, bagging_predictions)
+adaboost_conf_matrix = confusion_matrix(y_test, adaboost_predictions)
+
+# Display Accuracies and Confusion Matrices
+
+# Decision Tree
+decision_tree = DecisionTreeClassifier()
+decision_tree.fit(X_train, y_train)
+dt_predictions = decision_tree.predict(X_test)
+dt_conf_matrix = confusion_matrix(y_test, dt_predictions)
+dt_accuracy = accuracy_score(y_test, dt_predictions)
+
+# Random Forest
+random_forest = RandomForestClassifier()
+random_forest.fit(X_train, y_train)
+rf_predictions = random_forest.predict(X_test)
+rf_conf_matrix = confusion_matrix(y_test, rf_predictions)
+rf_accuracy = accuracy_score(y_test, rf_predictions)
+
+# Bagging
+bagging = BaggingClassifier(base_estimator=DecisionTreeClassifier(), n_estimators=50, random_state=42)
+bagging.fit(X_train, y_train)
+bagging_predictions = bagging.predict(X_test)
+bagging_conf_matrix = confusion_matrix(y_test, bagging_predictions)
+bagging_accuracy = accuracy_score(y_test, bagging_predictions)
+
+# AdaBoost
+adaboost = AdaBoostClassifier(base_estimator=DecisionTreeClassifier(), n_estimators=50, random_state=42)
+adaboost.fit(X_train, y_train)
+adaboost_predictions = adaboost.predict(X_test)
+adaboost_conf_matrix = confusion_matrix(y_test, adaboost_predictions)
+adaboost_accuracy = accuracy_score(y_test, adaboost_predictions)
+
+# Display Accuracies and Confusion Matrices
+print("Decision Tree Accuracy:", dt_accuracy)
+print("Decision Tree Confusion Matrix:\n", dt_conf_matrix)
+
+print("Random Forest Accuracy:", rf_accuracy)
+print("Random Forest Confusion Matrix:\n", rf_conf_matrix)
+
+print("Bagging Accuracy:", bagging_accuracy)
+print("Bagging Confusion Matrix:\n", bagging_conf_matrix)
+
+print("AdaBoost Accuracy:", adaboost_accuracy)
+print("AdaBoost Confusion Matrix:\n", adaboost_conf_matrix)
+
+
+
+OUTPUT:
+
+Decision Tree Accuracy: 0.71875
+Decision Tree Confusion Matrix:
+ [[13 15]
+ [12 56]]
+Random Forest Accuracy: 0.8125
+Random Forest Confusion Matrix:
+ [[13 15]
+ [ 3 65]]
+Bagging Accuracy: 0.7708333333333334
+Bagging Confusion Matrix:
+ [[12 16]
+ [ 6 62]]
+AdaBoost Accuracy: 0.6979166666666666
+AdaBoost Confusion Matrix:
+ [[13 15]
+ [14 54]]
+
